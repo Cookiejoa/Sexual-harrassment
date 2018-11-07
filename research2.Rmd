@@ -1,0 +1,202 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+Research 2
+
+Yun Seong Ji
+
+```{r}
+library(readxl)
+```
+```{r}
+receipts <-read_excel("C:/Users/YunSeong/Downloads/2017-12-eeoc-harassment-charges-master/2017-12-eeoc-harassment-charges-master/data/SH_Charge_Receipts.xlsx")
+```
+```{r}
+claim_industry <- read.csv("C:/Users/YunSeong/Downloads/2017-12-eeoc-harassment-charges-master/2017-12-eeoc-harassment-charges-master/output/d3_claims_by_industry.csv")
+claim_sector<-read.csv("C:/Users/YunSeong/Downloads/2017-12-eeoc-harassment-charges-master/2017-12-eeoc-harassment-charges-master/output/d3_claims_by_sector.csv")
+```
+```{r}
+information<-read.csv("C:/Users/YunSeong/Downloads/2017-12-eeoc-harassment-charges-master/2017-12-eeoc-harassment-charges-master/output/d3_information_naics_bls_info.csv")
+```
+```{r}
+te<-information$total_employment
+wp<-information$women_percentage
+```
+te: total employment 
+wp: women percentage
+
+```{r}
+View(information)
+```
+
+```{r}
+nw<-te*wp[2]
+```
+number of women
+```{r}
+nw
+```
+```{r}
+normal<-te/100000
+```
+normal: total employment/1000000 --> normalize the number 
+```{r}
+industry<-information$industry
+industry
+```
+
+```{r}
+normal
+```
+```{r}
+hours<-information$avg_hrly_earnings
+```
+
+```{r}
+category<-claim_sector$naics_code
+claim16<-claim_sector$claims_2016
+totalclaim<-claim_sector$claims_total
+```
+```{r}
+sum(totalclaim)
+```
+
+```{r}
+sum<-sum(totalclaim)
+```
+```{r}
+64443/sum
+```
+Approximately 38% of them did not specify an industry 
+###ggplot 
+
+```{r}
+library(ggplot2)
+```
+```{r}
+output1<-ggplot(claim_sector, aes(claim_sector$naics_code, claim_sector$claims_2016))+geom_bar(stat="identity", fill="darkblue")+scale_x_discrete("Industry")+scale_y_continuous("2016 claim")+theme_bw()+labs(title="Barchart")
+```
+```{r}
+output1
+```
+
+The highest point is the unspecified one --> people still do not want to inform their workplaces in this situation. 
+
+
+```{r}
+output3<-ggplot(claim_sector, aes(claim_sector$naics_code, (claim_sector$claims_2016)/100000))+geom_bar(stat="identity", fill="darkblue")+scale_x_discrete("Industry")+scale_y_continuous("2016 claim")+theme_bw()+labs(title="Barchart")
+```
+```{r}
+output3
+```
+
+```{r}
+output2<-ggplot(claim_sector, aes(claim_sector$naics_code, claim_sector$claims_total))+geom_bar(stat="identity", fill="red")+scale_x_discrete("Industry")+scale_y_continuous("total claim")+theme_bw()+labs(title="Barchart")
+```
+```{r}
+output2
+```
+```{r}
+output4<-ggplot(claim_sector, aes(claim_sector$naics_code, (claim_sector$claims_total)/100000))+geom_bar(stat="identity", fill="red")+scale_x_discrete("Industry")+scale_y_continuous("total claim")+theme_bw()+labs(title="Barchart")
+output4
+```
+
+```{r}
+histogram1<-ggplot(data=claim_sector, aes(x=(totalclaim/100000), color=category))+geom_histogram(fill="white", bins=30)
+```
+```{r}
+histogram1
+```
+```{r}
+library("readxl")
+```
+
+```{r}
+data3<-read_excel("C:/Users/YunSeong/Desktop/reaading and research/data3.xlsx")
+```
+```{r}
+a<-data3$industry
+b<-data3$claims_2016
+c<-data3$claims_total
+d<-data3$avg_hrly_earnings
+e<-data3$total_employment
+f<-data3$women_percentage
+```
+```{r}
+h<-e/100000
+```
+```{r}
+h
+```
+
+```{r}
+d
+```
+```{r}
+c/100000
+```
+
+```{r}
+p<-ggplot(data3, aes(x=d, y=f, fill=a))+geom_bar(stat="identity")
+```
+```{r}
+p
+```
+x-axis: average hourly earning, y-axis: women percentage per industry
+
+```{r}
+q<-ggplot(data3, aes(x=d, y=c, fill=a))+geom_bar(stat="identity")
+```
+```{r}
+q
+```
+x-axis: average hourly earning, y-axis: total claim per industry
+```{r}
+g<-ggplot(data3, aes(d,c/100000, color=a))+labs(subtitle="Average hourly earnings vs. Claims", title="Bubble chart")+geom_jitter(aes(size=e))
+```
+```{r}
+g
+```
+
+using bubble chart, x-axis: average hourly earning, y-axis: total claim, the size of bubble indicuates the industry 
+
+Correlogram
+```{r}
+library(dplyr)
+```
+
+```{r}
+library(corrplot)
+```
+
+```{r}
+M<-cbind.data.frame(claim_sector$claims_total,claim_sector$claims_2016)
+```
+```{r}
+M
+```
+```{r}
+L<-cbind.data.frame(totalclaim,claim16)
+```
+```{r}
+corr_matrix1<-cor(L)
+```
+
+```{r}
+corr_matrix<-cor(M)
+```
+```{r}
+corrplot(corr_matrix1, method = "number")
+```
+According to correlogram, there is strong positive relationship between total claim and claim of 2016. (They are correlated). 
+
+```{r}
+pie(claim_sector$claims_total, labels = claim_sector$naics_code, col=rainbow(length(claim_sector$naics_code)), main="Pie chart of industries claiming women sexaul harrassment")
+```
+
+```{r}
+View(data3)
+```
+
